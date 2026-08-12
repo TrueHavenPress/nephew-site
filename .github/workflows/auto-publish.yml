@@ -1,0 +1,136 @@
+# Auto-publish site changes
+#
+# WHAT IT DOES
+#   The site-self-service workflow (see claude.md) lets the site owner edit
+#   the site by talking to Claude Code. When they "publish", Claude opens a
+#   pull request from a `session/...` branch into `main`. This workflow turns
+#   that PR into a live change automatically:
+#     1. Guardrail — if the PR touches a protected file (the CNAME/domain
+#        config or these workflows), it is NOT auto-merged; it's flagged for
+#        the site admin. These are operational-safety fences, not ownership —
+#        the site is the client's.
+#     2. Sanity — changed HTML files must be non-empty and not truncated.
+#     3. Publish — if both pass, squash-merge to main. GitHub Pages (classic,
+#        "deploy from branch") then rebuilds the live site within a minute or
+#        two. No deploy step is needed here.
+#
+#   Only `session/*` branches are auto-handled. The site admin's own PRs are
+#   left alone.
+#
+#   This repo is public (GitHub Pages requires it), so a "secret scan" step
+#   also does a best-effort check for obviously credential-shaped content
+#   (API keys, private key blocks, tokens) and blocks auto-publish if it
+#   finds any. It is NOT a full secret scanner and isn't the only line of
+#   defense — see claude.md's Guardrails section — but it's a backstop.
+
+name: Auto-publish site changes
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+
+concurrency:
+  group: auto-publish-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  validate-and-publish:
+    runs-on: ubuntu-latest
+    # Only the skill's own change branches are auto-published.
+    if: startsWith(github.event.pull_request.head.ref, 'session/')
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PR: ${{ github.event.pull_request.number }}
+    steps:
+      - name: Check out the proposed changes
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: List changed files
+        run: |
+          gh pr view "$PR" --repo "$GITHUB_REPOSITORY" --json files \
+            --jq '.files[].path' > changed.txt
+          echo "Changed files in this change set:"
+          cat changed.txt
+
+      - name: Guardrail — protected files must not be auto-published
+        id: guardrail
+        run: |
+          protected='^(CNAME$|\.github/workflows/)'
+          if grep -E "$protected" changed.txt; then
+            echo "blocked=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "blocked=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Flag protected change for the site admin and stop
+        if: steps.guardrail.outputs.blocked == 'true'
+        run: |
+          gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body \
+            "🚧 This change touches a protected file (the domain config or the site automation). It will **not** auto-publish — the site admin needs to review it. Nothing is lost: your edit is safely saved and waiting."
+          echo "::error::Protected file modified — refusing to auto-publish."
+          exit 1
+
+      - name: HTML sanity check
+        run: |
+          fail=0
+          while IFS= read -r f; do
+            case "$f" in
+              *.html)
+                # Skip files deleted in this PR (not present in the checkout).
+                [ -e "$f" ] || continue
+                if [ ! -s "$f" ]; then
+                  echo "::error file=$f::HTML file is empty."
+                  fail=1
+                  continue
+                fi
+                if grep -qi '<html' "$f" && ! grep -qi '</html>' "$f"; then
+                  echo "::error file=$f::'<html>' opened but '</html>' missing — file may be truncated."
+                  fail=1
+                fi
+                ;;
+            esac
+          done < changed.txt
+          if [ "$fail" -ne 0 ]; then
+            gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body \
+              "⚠️ Something looks off with one of the edited pages, so I held off on publishing. The site admin can take a look — your changes are saved."
+          fi
+          exit $fail
+
+      - name: Secret scan — check for obviously credential-shaped content
+        id: secretscan
+        run: |
+          # Best-effort only: catches common shapes (private key blocks, AWS/
+          # Google/GitHub/Slack/Stripe keys, JWTs, generic api_key=/token=
+          # assignments). It will not catch everything. Ordinary business
+          # contact info (phone, email, address) is expected to be public on
+          # this site and is not what this is looking for.
+          pattern='-----BEGIN [A-Z ]*PRIVATE KEY-----|AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z_-]{35}|gh[pousr]_[A-Za-z0-9]{36,}|xox[baprs]-[A-Za-z0-9-]{10,}|sk_live_[0-9a-zA-Z]{16,}|eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}|(api|secret|access)[_-]?(key|token)[^a-zA-Z0-9]{1,6}[A-Za-z0-9_-]{16,}'
+          found=0
+          while IFS= read -r f; do
+            [ -e "$f" ] || continue
+            if grep -qiE -e "$pattern" "$f"; then
+              echo "::error file=$f::Contains something that looks like a credential or private key."
+              found=1
+            fi
+          done < changed.txt
+          echo "found=$found" >> "$GITHUB_OUTPUT"
+
+      - name: Flag possible secret and stop
+        if: steps.secretscan.outputs.found == '1'
+        run: |
+          gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body \
+            "🔒 Held off on publishing — one of the changed files contains something that looks like a password, API key, or private key. This site is public, so I won't auto-publish that. If it's not actually sensitive, the site admin can publish it manually; otherwise remove it and the change can go through normally."
+          exit 1
+
+      - name: Publish (squash-merge to main)
+        run: |
+          gh pr merge "$PR" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+          gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body \
+            "✅ Published. The live site refreshes in a minute or two — give it a refresh shortly."
