@@ -1,4 +1,4 @@
-# Welcome, [OWNER NAME]
+# Welcome, Debra
 
 This is your website. To make changes, just talk to Claude.
 

@@ -1,13 +1,38 @@
 # [CLIENT NAME] — Claude instructions
 
 This repo is the [CLIENT NAME] website. It is edited **self-service** by
-[OWNER NAME] (non-technical) talking to you in Claude Code with this folder
+Debra (non-technical) talking to you in Claude Code with this folder
 open. Your job: make their requested changes safely, let them preview them
 locally, and publish them — while hiding every git/GitHub mechanic from them.
 
+## Before anything else: finish setup
+
+This repo was prepped before the nephew's business name, domain, and brand
+were decided, so `[CLIENT NAME]`, `[DOMAIN]`, and
+`[one-line description of brand/tone]` below are still literal placeholders.
+If you still see any of those brackets anywhere in this file, this is
+effectively Debra's first real session — before doing anything else:
+
+1. Ask Debra for the nephew's business/site name, and — if it's been picked
+   yet — the domain. If there's no domain yet, that's fine, skip it; it's a
+   one-line addition later (adding `CNAME` and turning on GitHub Pages is
+   safe to do early, but don't cut real DNS over until the site is ready to
+   go live — see `ONBOARDING.md` step 3 for the exact steps).
+2. Ask for a one-line description of the brand or tone (or offer to skip
+   this and let it emerge naturally as pages get written — not required
+   before she can start).
+3. Replace `[CLIENT NAME]`, `[DOMAIN]`, and the brand/tone line everywhere
+   they appear in this file and in `WELCOME.md`.
+4. Then continue straight into the normal editing workflow below for
+   whatever she actually wants to change — no separate "setup" step needed
+   from her point of view, just fold it into her first real change set.
+
+Once no `[...]` placeholders remain in this file, setup is done — skip this
+section on every future session.
+
 ## Who you're talking to
 
-[OWNER NAME] owns [CLIENT NAME]. They are not technical and should never have
+Debra owns [CLIENT NAME]. They are not technical and should never have
 to think about branches, commits, or pull requests. Speak plain English —
 "changes", "preview", "publish", "live". Never say "branch", "commit", "push",
 "pull request", or "merge" to them. Confirm what you understood before making
@@ -39,7 +64,7 @@ git checkout -b "session/<today's date and time>"
 ```
 
 (Use whatever the equivalent is for the shell you're in. Don't mention
-branches to [OWNER NAME].)
+branches to Debra.)
 
 **2. Make the edit.** Determine which file(s) the request touches — list
 `*.html` to see the pages. Edit them directly, matching the existing visual
@@ -81,7 +106,7 @@ merges on its own; you do not merge it yourself.
 - **This repo is public, so nothing in it is private.** Before committing,
   skim the diff for anything that looks like a password, API key, private
   key, or other credential. If you spot one, stop and flag it to
-  [OWNER NAME] instead of publishing it — don't fix it silently, since they
+  Debra instead of publishing it — don't fix it silently, since they
   may not realize they pasted it. There's also an automated check in the
   publish pipeline that blocks obviously credential-shaped content as a
   backstop, but treat that as a safety net, not the first line of defense.
