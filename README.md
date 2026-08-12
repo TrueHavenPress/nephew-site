@@ -1,98 +1,88 @@
-# doxDev self-service site template
+# Welcome, Debra
 
-This is doxDev's internal template for standing up self-service marketing
-sites for clients. Each client gets their own repo generated from this
-template. Once set up, the client edits their own site by talking to Claude
-Code in plain English — no git, GitHub, or code knowledge required on their
-end.
+This is your website. To make changes, just talk to Claude.
 
-**This README is for doxDev, not the client.** If you're the client reading
-this, you probably want [WELCOME.md](WELCOME.md) instead.
+## How it works
 
-## What this template provides
+You don't need to open this folder, click around the website's files, or know
+what any of these names mean. Your site admin set up a tool that handles all
+of that for you. Your part is just the conversation.
 
-- A static HTML/CSS site (no build step) that deploys via GitHub Pages.
-- `claude.md` — instructions that turn Claude Code into the client's
-  self-service editor: it makes the edit, previews it locally, and publishes
-  it, while hiding every git/GitHub mechanic from the client.
-- `.github/workflows/auto-publish.yml` — a GitHub Action that auto-merges
-  the client's changes once Claude opens a pull request, so a doxDev human
-  doesn't need to be in the loop for routine edits.
-- Guardrails so the client can edit their content freely but can't
-  accidentally take the domain offline or rewrite the publishing automation.
-- **The repo must be public** — that's what makes GitHub Pages work on the
-  free plan this template assumes. That also means everything committed here
-  is world-readable, so the pipeline includes a best-effort check that blocks
-  obviously credential-shaped content (API keys, private keys, tokens) from
-  auto-publishing. See "Guardrails" below.
+1. Open **Claude Code** (the Claude app you were walked through installing).
+2. Say what you'd like to change on the site. Be as specific or vague as
+   you'd like — Claude will figure it out and ask if it needs to.
+3. Claude will give you a **preview link** so you can see the change in your
+   browser before it goes anywhere.
+4. Look at the preview. Ask for tweaks. Walk away and come back if you need
+   to — preview links last as long as you need.
+5. When you're happy, tell Claude to publish.
+6. The site updates a few minutes later. (There's a quick verification step
+   in there — you don't have to do anything during that wait.)
 
-## Repo map
+A typical change is under a minute of conversation, then a few minutes of
+waiting for the live site to refresh.
 
-| File | Purpose |
-| --- | --- |
-| `claude.md` | Claude Code's instructions for working in a client's repo. This is the core of the self-service workflow. |
-| `WELCOME.md` | The doc the client reads. Explains the workflow ("preview", "publish") in plain language, no jargon. |
-| `ONBOARDING.md` | Step-by-step for standing up a **new** client site from this template. Start there for a new client. |
-| `.github/workflows/auto-publish.yml` | Validates and auto-merges the client's changes. |
-| `index.html`, `404.html`, `privacy-policy.html`, `terms-and-conditions.html`, `styles.css` | Placeholder starter content for the site itself. |
+## Preview is the default
 
-## Setting up a new client site
+You never need to ask for one — Claude shows you a preview before publishing
+every time. The flow is:
 
-Full steps live in [ONBOARDING.md](ONBOARDING.md). Short version:
+> "Update the [...] page to add [...]"
+>
+> *Claude makes the change, gives you a preview link.*
+>
+> *You look at it. You ask for adjustments, or you say "go ahead."*
+>
+> *Claude publishes only when you say so.*
 
-1. Generate the repo from this template:
-   ```
-   gh repo create <ORG>/<Client>-Site --public --template <this-repo> --clone
-   ```
-2. Find-and-replace the placeholders (`[CLIENT NAME]`, `[OWNER NAME]`,
-   `[DOMAIN]`) in `claude.md` and `WELCOME.md`.
-3. Add the `CNAME` file and point GitHub Pages at it — but don't cut DNS
-   over until the site is actually ready to go live.
-4. Confirm `gh auth status` is logged in with access to the new repo.
-5. Get the client set up on their machine (below), then hand off.
+You don't need to memorize specific words. "Make it live", "publish it",
+"looks good — push it" — Claude understands the intent.
 
-## Getting the client set up on their machine
+## Changing your mind
 
-This is the one-time setup a doxDev person walks the client through before
-they can start talking to Claude Code about their site. After this, every
-future session is just "open Claude Code and say what you want changed" —
-see `WELCOME.md` for how that ongoing conversation works.
+Even after something is live, it's not permanent. Tell Claude (or reach out
+to your site admin):
 
-1. **Install Git** — [git-scm.com/downloads](https://git-scm.com/downloads).
-   Default install options are fine.
-2. **Install the GitHub CLI** — [cli.github.com](https://cli.github.com/).
-   Then run `gh auth login` and follow the prompts — browser sign-in is
-   easiest.
-3. **Install Claude Code** — follow the setup at
-   [claude.com/claude-code](https://claude.com/claude-code) for their OS.
-4. **Clone their site's repo:**
-   ```
-   git clone https://github.com/<ORG>/<Client>-Site.git
-   ```
-5. **Open the folder in Claude Code** — `cd <Client>-Site`, then start
-   Claude Code from inside that folder. It reads `claude.md` automatically
-   and already knows the workflow — no extra setup per session.
-6. Point them at `WELCOME.md` (or walk through it together) — that's their
-   reference for how previews and publishing work.
+> "Undo that."
+>
+> "Put it back the way it was."
+>
+> "Roll back the last change."
 
-From here, every change is a conversation: the client describes what they
-want, Claude previews it, they approve, Claude publishes. See `claude.md`
-for exactly what Claude does behind the scenes.
+Any recent change can be reversed in about the same time it took to make.
 
-## Guardrails (why they exist)
+## If something feels off
 
-- **The repo is public, and always must be** — it's what makes GitHub Pages
-  serve the site on the free plan this template assumes. There's no private
-  mode to fall back on here. That means nothing committed to it is private:
-  Claude is instructed to skim for obvious credentials before publishing,
-  and the auto-publish Action blocks obviously credential-shaped content
-  (API keys, private keys, tokens) as a backstop. Neither is a substitute
-  for not pasting secrets into the site in the first place.
-- `CNAME` and `.github/workflows/**` are off-limits to self-service edits —
-  a bad domain value or a rewritten workflow can silently take the site
-  offline or break the publish pipeline. The Action blocks these from
-  auto-merging; changes to them go through doxDev directly.
-- Everything else — including the legal pages — is the client's to edit
-  freely through Claude.
+Tell your site admin. Don't try to fix it yourself. There's a full history of
+every version of every page going back to launch — anything broken is
+recoverable, including pages you don't think can come back.
 
-Full rationale and the exact rules Claude follows live in `claude.md`.
+## You can't break it permanently
+
+Every change is recorded. Wrong colors, broken links, missing photos, a
+paragraph you regret — all reversible. Experiment freely.
+
+The only thing to be careful about is publishing something you're not quite
+ready for. The preview step exists to make that easy to avoid: look at it
+first, fix anything that's off, then say go.
+
+## Things Claude won't touch without you asking
+
+A few things stay off-limits unless you ask for them specifically:
+
+- The **privacy policy** and **terms and conditions** pages — legal copy,
+  edited only on request.
+- The **domain configuration** (the part that points [DOMAIN] at this site) —
+  your site admin's job.
+- The **automated parts** behind the scenes — same.
+
+If you genuinely want to update any of those, just say so plainly and Claude
+will confirm once before doing it.
+
+## Who to talk to
+
+- **For website changes** — talk to Claude.
+- **For anything weird, broken, or surprising** — reach out to your site
+  admin.
+- **For the domain, hosting, or "wait, where does Claude get this stuff
+  from?"** — also your site admin.

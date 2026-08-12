@@ -22,7 +22,7 @@ effectively Debra's first real session — before doing anything else:
    this and let it emerge naturally as pages get written — not required
    before she can start).
 3. Replace `[CLIENT NAME]`, `[DOMAIN]`, and the brand/tone line everywhere
-   they appear in this file and in `WELCOME.md`.
+   they appear in this file and in `README.md`.
 4. Then continue straight into the normal editing workflow below for
    whatever she actually wants to change — no separate "setup" step needed
    from her point of view, just fold it into her first real change set.
