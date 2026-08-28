@@ -1,38 +1,13 @@
-# [CLIENT NAME] — Claude instructions
+# J&J's Handyman Solutions — Claude instructions
 
-This repo is the [CLIENT NAME] website. It is edited **self-service** by
+This repo is the J&J's Handyman Solutions website. It is edited **self-service** by
 Debra (non-technical) talking to you in Claude Code with this folder
 open. Your job: make their requested changes safely, let them preview them
 locally, and publish them — while hiding every git/GitHub mechanic from them.
 
-## Before anything else: finish setup
-
-This repo was prepped before the nephew's business name, domain, and brand
-were decided, so `[CLIENT NAME]`, `[DOMAIN]`, and
-`[one-line description of brand/tone]` below are still literal placeholders.
-If you still see any of those brackets anywhere in this file, this is
-effectively Debra's first real session — before doing anything else:
-
-1. Ask Debra for the nephew's business/site name, and — if it's been picked
-   yet — the domain. If there's no domain yet, that's fine, skip it; it's a
-   one-line addition later (adding `CNAME` and turning on GitHub Pages is
-   safe to do early, but don't cut real DNS over until the site is ready to
-   go live — see `ONBOARDING.md` step 3 for the exact steps).
-2. Ask for a one-line description of the brand or tone (or offer to skip
-   this and let it emerge naturally as pages get written — not required
-   before she can start).
-3. Replace `[CLIENT NAME]`, `[DOMAIN]`, and the brand/tone line everywhere
-   they appear in this file and in `README.md`.
-4. Then continue straight into the normal editing workflow below for
-   whatever she actually wants to change — no separate "setup" step needed
-   from her point of view, just fold it into her first real change set.
-
-Once no `[...]` placeholders remain in this file, setup is done — skip this
-section on every future session.
-
 ## Who you're talking to
 
-Debra owns [CLIENT NAME]. They are not technical and should never have
+Debra owns J&J's Handyman Solutions. They are not technical and should never have
 to think about branches, commits, or pull requests. Speak plain English —
 "changes", "preview", "publish", "live". Never say "branch", "commit", "push",
 "pull request", or "merge" to them. Confirm what you understood before making
@@ -41,14 +16,14 @@ large changes.
 ## Repo facts
 
 - **Stack:** vanilla HTML / CSS / a little JavaScript. Static, no build step.
-- **Deploys:** GitHub Pages from `main` → [DOMAIN] (CNAME).
+- **Deploys:** GitHub Pages from `main` → jjshandymansolutions.com (CNAME).
 - **Publishing is automated:** when a pull request from a `session/*` branch is
   opened into `main`, a GitHub Action validates it and merges it; GitHub Pages
   then rebuilds the live site in a minute or two. **You open the PR — the
   Action does the merge.** Never push directly to `main`.
 - **Visibility:** this repo is public — GitHub Pages requires it. Everything
   in it is world-readable, including full history.
-- **Brand:** [one-line description of brand/tone].
+- **Brand:** Friendly, local, and down-to-earth — reads like a trusted neighbor who does good work, not a corporation.
 
 ## The editing workflow — follow this every time they ask for a change
 
@@ -97,7 +72,7 @@ gh pr create --base main --title "<their note>" --body "<their note>"
 
 Do **not** show them the PR link or any GitHub URLs.
 
-**6. Hand-off.** Tell them: *"Your changes are publishing now — give [DOMAIN]
+**6. Hand-off.** Tell them: *"Your changes are publishing now — give jjshandymansolutions.com
 a minute or two, then refresh and you'll see them."* The Action validates and
 merges on its own; you do not merge it yourself.
 
@@ -125,7 +100,7 @@ merges on its own; you do not merge it yourself.
   check also blocks these from auto-publishing, so nothing slips through by
   accident.
 - **Everything else is theirs to edit freely — including the legal pages**
-  (`privacy-policy.html`, `terms-and-conditions.html`). Treat them as ordinary
+  (`privacy.html`, `terms.html`, `accessibility.html`). Treat them as ordinary
   content; just confirm once before a full rewrite.
 - Confirm once before any destructive change: deleting a page or section, or
   replacing a large block of content.
