@@ -184,7 +184,14 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 /* invitation */
 .invite{max-width:70ch;margin:0 auto}
 .invite h2{margin-bottom:16px}
-.invite .btn{margin-top:26px}
+.invite-phone{margin:26px 0 22px}
+.invite-phone a{
+  display:inline-flex;align-items:center;min-height:48px;
+  font-family:Oswald,Arial,sans-serif;font-size:1.75rem;font-weight:500;
+  color:var(--maroon);text-decoration:none;letter-spacing:.02em;
+}
+.invite-phone a:hover{text-decoration:underline}
+.invite .btn{margin-top:0}
 
 /* trust bar */
 .trust{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;text-align:center}
@@ -384,8 +391,9 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
   <section class="section section-tanpale">
     <div class="wrap invite center">
       <h2>Start by telling us about it.</h2>
-      <p class="lede">Most of these lists didn't start yesterday. Whatever's going on—the thing that's been bothering you for two years, or the thing that broke this morning—let us know so we can take care of it for you. Send a few photos if that's easier. One of us reads every message, and we'll get back to you within 24 hours.</p>
-      <a class="btn btn-primary" href="contact.html">Tell us what's going on</a>
+      <p class="lede">Whatever's going on—the thing that's been bothering you for two years, or the thing that broke this morning—let us know so we can take care of it for you. Give us a call or use the contact form if you prefer. If we can't take your call right away, we will get back to you within 1 business day.</p>
+      <p class="invite-phone"><a href="tel:+18282305329">828-230-5329</a></p>
+      <a class="btn btn-primary" href="contact.html">Contact Us</a>
     </div>
   </section>
 
@@ -406,7 +414,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
       </div>
       <div class="trust-item">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16Zm-1 3v6l5 3 1-1.7-4-2.4V7h-2Z"/></svg>
-        <span>We answer within 24 hours</span>
+        <span>We respond within 1 business day</span>
       </div>
     </div>
   </section>
@@ -446,7 +454,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
       <div class="meet">
         <h2>Meet J&amp;J</h2>
         <p>We're Jason Long and Jason Kibler—the two J's. Between us we've spent 14 years in the trades, working for other handyman companies and on our own before starting this one.</p>
-        <p>We started J&amp;J's to give people a better option: quality workmanship at reasonable pricing, from professionals you can trust. That's the whole idea. You tell us what's going on, we come look at it properly, you get the price in writing before anything starts, and we stand behind the work for five years.</p>
+        <p>We started J&amp;J's to give people a better option: quality workmanship at reasonable pricing, from professionals you can trust. That's the whole idea. You tell us what's going on, we come look at it, you get the price in writing before anything starts, and we stand behind the work for five years.</p>
         <p>When you send a message through this site, one of us reads it. Not a call center, not an answering service. One of the two Jasons.</p>
         <p class="signoff">—Jason &amp; Jason</p>
       </div>
@@ -459,7 +467,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
   <!-- 7. WHAT TO EXPECT -->
   <section class="section">
     <div class="wrap">
-      <h2 class="center">What to expect</h2>
+      <h2 class="center">What to Expect</h2>
       <ol class="steps" style="list-style:none;padding:0">
         <li class="step">
           <div class="step-num">1</div>
@@ -468,23 +476,23 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
         </li>
         <li class="step">
           <div class="step-num">2</div>
-          <h3>We get back to you within 24 hours.</h3>
-          <p>Business days, and usually sooner.</p>
+          <h3>We get back to you within 1 business day.</h3>
+          <p>We will answer when you call if we can, or respond ASAP if you leave a message or fill out the contact form.</p>
         </li>
         <li class="step">
           <div class="step-num">3</div>
           <h3>We come out and look.</h3>
-          <p>The estimate is free and we schedule it when it works for you. Seeing the job in person is the only way to price it honestly.</p>
+          <p>The estimate is free, and we schedule the site visit at your convenience. Seeing the job in person is the only way to price it correctly.</p>
         </li>
         <li class="step">
           <div class="step-num">4</div>
           <h3>You get the price in writing.</h3>
-          <p>Before anything starts, and it doesn't change on you halfway through.</p>
+          <p>We provide a professionally written and detailed estimate that doesn't change on you halfway through.</p>
         </li>
         <li class="step">
           <div class="step-num">5</div>
           <h3>We do the work.</h3>
-          <p>On the day we said, and we clean up after ourselves.</p>
+          <p>We show up when we said, do quality work we'll be proud of, and clean up after ourselves.</p>
         </li>
       </ol>
     </div>
@@ -502,7 +510,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
   <section class="section">
     <div class="wrap area-grid">
       <div>
-        <h2>Where we work</h2>
+        <h2>Where We Work</h2>
         <p class="lede" style="margin-left:0">Asheville, Weaverville, Woodfin, Candler, Leicester, Arden, Fletcher, Fairview, Black Mountain, and Swannanoa—and generally anywhere within about an hour of Asheville. If you're farther out, give us a call and we'll talk it through.</p>
       </div>
       <div>

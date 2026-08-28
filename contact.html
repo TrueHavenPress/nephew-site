@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tell Us What's Going On — J&amp;J's Handyman Solutions, Asheville NC</title>
-<meta name="description" content="Tell J&amp;J's Handyman Solutions what's going on with your home. One of the two Jasons reads every message and gets back to you within 24 hours on business days. Or call 828-230-5329.">
+<meta name="description" content="Tell J&amp;J's Handyman Solutions what's going on with your home. One of the two Jasons reads every message and gets back to you within 1 business day. Or call 828-230-5329.">
 <link rel="canonical" href="https://jjshandymansolutions.com/contact.html">
 
 <meta property="og:type" content="website">
@@ -306,7 +306,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 
         <div class="field field-photos">
           <label for="photos">Photos (optional)</label>
-          <p class="helper" id="photoHelp">Have a photo? Add one if it helps us picture it. Not needed for every job.</p>
+          <p class="helper" id="photoHelp">We will need to see it in person, but if you'd like to share photos to help us be more prepared for a phone conversation first or the site visit, you're welcome to send one or a few.</p>
           <input class="file-input" type="file" id="photos" name="photos" accept="image/*" multiple aria-describedby="photoHelp">
         </div>
 
@@ -329,7 +329,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
     <div class="wrap">
       <div class="next">
         <h2>What happens next</h2>
-        <p>One of us reads what you wrote—one of the two Jasons, not a call center. We'll get back to you within 24 hours on business days to ask anything we need to and set up a time to come look at the job.</p>
+        <p>One of us reads what you wrote—one of the two Jasons, not a call center. We'll get back to you within 1 business day to ask anything we need to and set up a time to come look at the job.</p>
         <p>Estimates are free, and we schedule the visit when it works for you. We don't quote from photos—seeing it in person is the only way to plan the work properly and give you a price that holds. The photos just help us show up prepared.</p>
       </div>
 
@@ -407,7 +407,7 @@ document.getElementById('yr').textContent = new Date().getFullYear();
     // --- required fields ---
     var missing = [];
     [['name','your name'],['phone','a phone number'],['email','an email address'],
-     ['town','your town'],['message','a note about what’s going on']].forEach(function(f){
+     ['town','your town'],['message','a note about what's going on']].forEach(function(f){
       if (!form[f[0]].value.trim()) missing.push(f[1]);
     });
     if (missing.length){
@@ -418,7 +418,7 @@ document.getElementById('yr').textContent = new Date().getFullYear();
 
     // --- endpoint not configured yet ---
     if (FORM_ENDPOINT === 'REPLACE_ME'){
-      say('<strong>This form isn’t connected yet.</strong> So your message doesn’t get lost, please call ' +
+      say('<strong>This form isn't connected yet.</strong> So your message doesn't get lost, please call ' +
           '<a href="tel:+18282305329">828-230-5329</a> or email ' +
           '<a href="mailto:jjs.handymansolutions@gmail.com">jjs.handymansolutions@gmail.com</a>.');
       return;
@@ -435,7 +435,7 @@ document.getElementById('yr').textContent = new Date().getFullYear();
       .catch(function(){
         btn.disabled = false;
         btn.textContent = 'Send it over';
-        say('Something went wrong sending that, and we don’t want to lose what you wrote. ' +
+        say('Something went wrong sending that, and we don't want to lose what you wrote. ' +
             'Please call <a href="tel:+18282305329">828-230-5329</a> or email ' +
             '<a href="mailto:jjs.handymansolutions@gmail.com">jjs.handymansolutions@gmail.com</a>.');
       });
