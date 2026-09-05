@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Page Not Found — J&amp;J's Handyman Solutions</title>
-<meta name="description" content="That page isn't here. Head back to the homepage, see what we do, or tell us what's going on.">
+<title>Email Us — J&amp;J's Handyman Solutions</title>
+<meta name="description" content="Email J&amp;J's Handyman Solutions in Asheville, NC. Open a pre-addressed message in your mail app, Gmail, Outlook.com or Yahoo, or copy our address.">
 <meta name="robots" content="noindex,follow">
-<link rel="canonical" href="https://jjshandymansolutions.com/404.html">
+<link rel="canonical" href="https://jjshandymansolutions.com/email.html">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="J&amp;J's Handyman Solutions">
-<meta property="og:title" content="Page Not Found — J&amp;J's Handyman Solutions">
-<meta property="og:description" content="That page isn't here. Head back to the homepage, see what we do, or tell us what's going on.">
-<meta property="og:url" content="https://jjshandymansolutions.com/404.html">
+<meta property="og:title" content="Email Us — J&amp;J's Handyman Solutions">
+<meta property="og:description" content="The terms that apply to this website and to work performed by J&J's Handyman Solutions in Asheville, NC.">
+<meta property="og:url" content="https://jjshandymansolutions.com/email.html">
 <meta name="twitter:card" content="summary">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -132,6 +132,40 @@ main{flex:1 0 auto}
   body{padding-bottom:56px}
 }
 @media (max-width:560px){ .page-head{padding:38px 0 40px} }
+
+/* email page */
+.email-label{
+  font-family:Oswald,Arial,sans-serif;text-transform:uppercase;letter-spacing:.14em;
+  font-size:.82rem;color:var(--navy);margin-bottom:8px;
+}
+.email-big{margin:0 0 18px}
+.email-big a{
+  font-family:Oswald,Arial,sans-serif;font-weight:500;letter-spacing:.01em;
+  font-size:clamp(1.15rem,4.4vw,1.95rem);color:var(--maroon);text-decoration:none;
+  overflow-wrap:anywhere;display:inline-block;min-height:48px;
+}
+.email-big a:hover{text-decoration:underline}
+.copy-row{display:flex;flex-wrap:wrap;align-items:center;gap:14px}
+.copy-note{font-size:.98rem;color:var(--navy-light)}
+.mail-options{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:6px}
+.mail-opt{
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  min-height:56px;padding:12px 18px;
+  background:#fff;border:2px solid var(--navy);border-radius:3px;
+  font-family:Oswald,Arial,sans-serif;font-size:1rem;letter-spacing:.03em;
+  color:var(--navy);text-decoration:none;
+}
+.mail-opt:hover{background:var(--navy);color:#fff}
+.mail-opt.primary{background:var(--maroon);border-color:var(--maroon);color:#fff}
+.mail-opt.primary:hover{background:var(--maroon-dark);border-color:var(--maroon-dark)}
+.email-phone{
+  display:inline-flex;align-items:center;min-height:48px;
+  font-family:Oswald,Arial,sans-serif;font-size:1.85rem;font-weight:500;
+  color:var(--maroon);text-decoration:none;letter-spacing:.02em;
+}
+.email-phone:hover{text-decoration:underline}
+.email-rule{margin:34px 0 0;padding-top:26px;border-top:1px solid rgba(201,168,124,.55)}
+@media (max-width:560px){ .mail-options{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
@@ -158,17 +192,38 @@ main{flex:1 0 auto}
 
 <main id="main">
 
-  <div class="wrap mid">
+  <section class="page-head">
+    <div class="wrap">
+      <h1>Email us</h1>
+      <p>Tell us what's going on and we'll get back to you within 1 business day. Use whichever of these is easiest for you.</p>
+    </div>
+  </section>
+
+  <div class="wrap">
     <article class="prose">
-      <h1 style="margin-bottom:18px">That page isn't here.</h1>
-      <p>Either the link was wrong or we moved something. Nothing you did.</p>
-      <p>Here's where you probably wanted to go:</p>
-      <div class="actions">
-        <a class="btn btn-primary" href="email.html">Tell us what's going on</a>
-        <a class="btn btn-ghost-dark" href="services.html">See what we do</a>
-        <a class="btn btn-ghost-dark" href="index.html">Back to the homepage</a>
+
+      <p class="email-label">Our email address</p>
+      <p class="email-big"><a href="mailto:jjs.handymansolutions@gmail.com?subject=Website%20inquiry">jjs.handymansolutions@gmail.com</a></p>
+      <div class="copy-row">
+        <button class="btn btn-ghost-dark" type="button" id="copyBtn">Copy address</button>
+        <span class="copy-note" id="copyNote" role="status" aria-live="polite"></span>
       </div>
-      <p style="margin-top:28px">Or just call us at <a href="tel:+18282305329">828-230-5329</a>, Monday–Friday, 8am–6pm.</p>
+
+      <h2>Or open a message now</h2>
+      <p>Each of these opens a new message already addressed to us, with the subject filled in. Just write what's going on and send.</p>
+      <div class="mail-options">
+        <a class="mail-opt primary" href="mailto:jjs.handymansolutions@gmail.com?subject=Website%20inquiry">Open in my mail app</a>
+        <a class="mail-opt" href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=jjs.handymansolutions@gmail.com&amp;su=Website%20inquiry" target="_blank" rel="noopener noreferrer">Gmail</a>
+        <a class="mail-opt" href="https://outlook.live.com/mail/0/deeplink/compose?to=jjs.handymansolutions@gmail.com&amp;subject=Website%20inquiry" target="_blank" rel="noopener noreferrer">Outlook.com</a>
+        <a class="mail-opt" href="https://compose.mail.yahoo.com/?to=jjs.handymansolutions@gmail.com&amp;subject=Website%20inquiry" target="_blank" rel="noopener noreferrer">Yahoo Mail</a>
+      </div>
+
+      <div class="email-rule">
+        <h2 style="margin-top:0">Would rather just call?</h2>
+        <p><a class="email-phone" href="tel:+18282305329">828-230-5329</a></p>
+        <p>Monday–Friday, 8am–6pm</p>
+      </div>
+
     </article>
   </div>
 </main>
@@ -201,6 +256,44 @@ document.getElementById('yr').textContent = new Date().getFullYear();
   t.addEventListener('click', function(){
     var open = n.classList.toggle('open');
     t.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+</script>
+
+
+<script>
+(function(){
+  var btn = document.getElementById('copyBtn'), note = document.getElementById('copyNote');
+  var ADDR = 'jjs.handymansolutions@gmail.com';
+  function done(msg){ note.textContent = msg; setTimeout(function(){ note.textContent=''; }, 4000); }
+  btn.addEventListener('click', function(){
+    // clipboard API needs a secure context; fall back, then tell the user plainly
+    if (navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(ADDR).then(function(){ done('Copied.'); }, legacy);
+    } else { legacy(); }
+    function selectAddress(){
+      // highlight the address on the page so Ctrl+C actually has something to copy
+      try{
+        var el = document.querySelector('.email-big a');
+        var r = document.createRange(); r.selectNodeContents(el);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        return true;
+      }catch(e){ return false; }
+    }
+    function legacy(){
+      try{
+        var ta = document.createElement('textarea');
+        ta.value = ADDR; ta.setAttribute('readonly','');
+        ta.style.position='fixed'; ta.style.left='-9999px';
+        document.body.appendChild(ta); ta.select();
+        var ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        if (ok){ done('Copied.'); return; }
+      }catch(e){}
+      done(selectAddress()
+        ? 'Address selected—press Ctrl+C (Cmd+C on a Mac) to copy.'
+        : 'Highlight the address above and press Ctrl+C to copy.');
+    }
   });
 })();
 </script>
