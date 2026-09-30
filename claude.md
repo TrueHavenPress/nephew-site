@@ -147,6 +147,17 @@ Two rules that never bend:
 
 - Always list `*.html` at runtime; pages get added and renamed over time.
 
+## Contact form
+
+The form on `contact.html` isn't connected yet (`FORM_ENDPOINT` is still
+`"REPLACE_ME"`), so it tells visitors to call or email instead. Connecting it
+is a site-admin job — don't guess at an endpoint. Step-by-step guides for
+Debra's side of the setup (the Google account that receives messages and
+sends the thank-you email) are in `docs/contact-form/` — start from
+`README.md` there. If Debra wants to do it, walk them through their chosen
+guide one step at a time; the web address it produces goes to the site admin.
+Never put a secret key from those guides in this repo.
+
 ## .claude/
 
 `launch.json` is a legacy preview config (python http.server on :8765).
