@@ -163,6 +163,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 /* honeypot — visually hidden, not display:none (bots skip display:none) */
 .hp{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
 
+.cf-turnstile{margin-top:24px}
 .form-actions{margin-top:30px;padding-top:26px;border-top:1px solid rgba(201,168,124,.55)}
 .form-note{
   margin-top:16px;padding:14px 16px;border-radius:3px;font-size:1rem;
@@ -368,12 +369,17 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 
 <script>
 /* ============================================================
-   FORM ENDPOINT — replace this one value to make the form live.
-   While it reads "REPLACE_ME" the form will NOT send, and it
-   tells the visitor to call or email instead of silently
-   swallowing their message.
+   FORM SETTINGS — the site admin fills these in.
+   FORM_ENDPOINT: the Google Apps Script web app link ending in
+   /exec (see docs/contact-form/). While it reads "REPLACE_ME" the
+   form will NOT send, and it tells the visitor to call or email
+   instead of silently swallowing their message.
+   TURNSTILE_SITE_KEY: Cloudflare Turnstile site key (public).
+   Leave "" to run without Turnstile. Add it at the same time as
+   the TURNSTILE_SECRET goes into the script's settings.
    ============================================================ */
 const FORM_ENDPOINT = "REPLACE_ME";
+const TURNSTILE_SITE_KEY = "";
 
 document.getElementById('yr').textContent = new Date().getFullYear();
 
@@ -391,7 +397,52 @@ document.getElementById('yr').textContent = new Date().getFullYear();
   var btn    = document.getElementById('submitBtn');
   var loaded = Date.now();
 
+  var CALL_OR_EMAIL = 'Please call <a href="tel:+18282305329">828-230-5329</a> or email ' +
+      '<a href="mailto:jjs.handymansolutions@gmail.com">jjs.handymansolutions@gmail.com</a>.';
+  var MAX_PHOTOS = 5;
+  var PHOTO_MAX_SIDE = 1600;
+
   function say(html){ note.innerHTML = html; note.classList.add('show'); }
+
+  // --- spam check 3 (optional): Cloudflare Turnstile ---
+  if (TURNSTILE_SITE_KEY){
+    var widget = document.createElement('div');
+    widget.className = 'cf-turnstile';
+    widget.setAttribute('data-sitekey', TURNSTILE_SITE_KEY);
+    form.insertBefore(widget, form.querySelector('.form-actions'));
+    var api = document.createElement('script');
+    api.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+    api.async = true;
+    document.head.appendChild(api);
+  }
+
+  // Shrink each photo to a JPEG no bigger than PHOTO_MAX_SIDE on its long side,
+  // so a handful of phone photos fits comfortably in one email.
+  function shrinkPhoto(file){
+    return new Promise(function(resolve){
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function(){
+        var scale = Math.min(1, PHOTO_MAX_SIDE / Math.max(img.naturalWidth, img.naturalHeight));
+        var canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.naturalWidth * scale);
+        canvas.height = Math.round(img.naturalHeight * scale);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
+        resolve(canvas.toDataURL('image/jpeg', 0.8));
+      };
+      img.onerror = function(){ URL.revokeObjectURL(url); resolve(null); };
+      img.src = url;
+    });
+  }
+
+  function preparePhotos(){
+    var files = Array.prototype.slice.call(form.photos.files || []);
+    return Promise.all(files.slice(0, MAX_PHOTOS).map(shrinkPhoto)).then(function(photos){
+      var ok = photos.filter(Boolean);
+      return { photos: ok, skipped: files.length - ok.length };
+    });
+  }
 
   form.addEventListener('submit', function(e){
     e.preventDefault();
@@ -406,7 +457,7 @@ document.getElementById('yr').textContent = new Date().getFullYear();
     // --- required fields ---
     var missing = [];
     [['name','your name'],['phone','a phone number'],['email','an email address'],
-     ['town','your town'],['message','a note about what's going on']].forEach(function(f){
+     ['town','your town'],['message','a note about what’s going on']].forEach(function(f){
       if (!form[f[0]].value.trim()) missing.push(f[1]);
     });
     if (missing.length){
@@ -417,26 +468,42 @@ document.getElementById('yr').textContent = new Date().getFullYear();
 
     // --- endpoint not configured yet ---
     if (FORM_ENDPOINT === 'REPLACE_ME'){
-      say('<strong>This form isn't connected yet.</strong> So your message doesn't get lost, please call ' +
-          '<a href="tel:+18282305329">828-230-5329</a> or email ' +
-          '<a href="mailto:jjs.handymansolutions@gmail.com">jjs.handymansolutions@gmail.com</a>.');
+      say('<strong>This form isn’t connected yet.</strong> So your message doesn’t get lost, ' + CALL_OR_EMAIL);
+      return;
+    }
+
+    // --- Turnstile still checking ---
+    var token = form.querySelector('[name="cf-turnstile-response"]');
+    if (TURNSTILE_SITE_KEY && (!token || !token.value)){
+      say('One moment — we’re checking you’re not a robot. Give it a few seconds, then press Send again.');
       return;
     }
 
     btn.disabled = true;
     btn.textContent = 'Sending…';
 
-    fetch(FORM_ENDPOINT, { method:'POST', body: new FormData(form) })
-      .then(function(r){
-        if (!r.ok) throw new Error(r.status);
+    preparePhotos()
+      .then(function(result){
+        // Sent as a URL-encoded body so Google Apps Script can read it (it can't
+        // read multipart uploads); photos travel as data: URLs in photo_1, photo_2, ...
+        var body = new URLSearchParams();
+        new FormData(form).forEach(function(value, key){
+          if (typeof value === 'string') body.append(key, value);
+        });
+        result.photos.forEach(function(photo, i){ body.append('photo_' + (i + 1), photo); });
+        if (result.skipped) body.append('photos_not_attached', result.skipped + ' photo(s) couldn’t be attached — ask them to text or email it');
+        return fetch(FORM_ENDPOINT, { method:'POST', body: body });
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(res){
+        if (!res.ok) throw new Error(res.error);
         window.location.href = 'thank-you.html';
       })
       .catch(function(){
         btn.disabled = false;
         btn.textContent = 'Send it over';
-        say('Something went wrong sending that, and we don't want to lose what you wrote. ' +
-            'Please call <a href="tel:+18282305329">828-230-5329</a> or email ' +
-            '<a href="mailto:jjs.handymansolutions@gmail.com">jjs.handymansolutions@gmail.com</a>.');
+        if (window.turnstile) window.turnstile.reset();
+        say('Something went wrong sending that, and we don’t want to lose what you wrote. ' + CALL_OR_EMAIL);
       });
   });
 })();

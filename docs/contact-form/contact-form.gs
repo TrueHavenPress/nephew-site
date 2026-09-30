@@ -8,6 +8,7 @@
  *   2. sends the visitor a short "thanks, we got your message" reply
  *      from YOUR Google email address, and
  *   3. saves a copy of the message in this spreadsheet.
+ * Photos sent with the form are attached to the email you receive.
  *
  * Setup instructions: docs/contact-form/google-apps-script.md
  *
@@ -79,6 +80,10 @@ var IGNORED_FIELDS = ['cf-turnstile-response', 'g-recaptcha-response', 'h-captch
 var EMAIL_PATTERN = /^[^\s@<>()",;:]+@[^\s@<>()",;:]+\.[^\s@<>()",;:]{2,}$/;
 var MAX_FIELDS = 30;
 var MAX_VALUE_LENGTH = 5000;
+var PHOTO_FIELD = /^photo_\d+$/;
+var PHOTO_DATA = /^data:image\/(jpeg|png|webp|gif);base64,([A-Za-z0-9+\/=]+)$/;
+var MAX_PHOTOS = 5;
+var MAX_PHOTO_BYTES = 15 * 1024 * 1024; // all photos together; Gmail's limit is 25 MB
 
 /** The website sends each form here. */
 function doPost(e) {
@@ -104,6 +109,11 @@ function doPost(e) {
       return respond_(false, 'empty');
     }
 
+    var photos = photoAttachments_(data);
+    if (photos.length) {
+      fields.photos = photos.length + (photos.length === 1 ? ' photo' : ' photos') + ' attached to the email';
+    }
+
     var visitorEmail = String(data.email || data.Email || '').trim();
     if (!EMAIL_PATTERN.test(visitorEmail) || visitorEmail.length > 254) {
       visitorEmail = '';
@@ -113,7 +123,7 @@ function doPost(e) {
       saveToSheet_(fields);
     }
 
-    notifyOwner_(fields, visitorEmail, data.name);
+    notifyOwner_(fields, visitorEmail, data.name, photos);
 
     var autoReplyAllowed = turnstilePassed || !turnstileSecret || !ADVANCED.AUTO_REPLY_NEEDS_TURNSTILE;
     if (SETTINGS.SEND_AUTO_REPLY && visitorEmail && autoReplyAllowed) {
@@ -185,7 +195,8 @@ function cleanFields_(data) {
   var names = Object.keys(data);
   for (var i = 0; i < names.length && Object.keys(fields).length < MAX_FIELDS; i++) {
     var key = names[i];
-    if (key === ADVANCED.HONEYPOT_FIELD || key.charAt(0) === '_' || IGNORED_FIELDS.indexOf(key) !== -1) {
+    if (key === ADVANCED.HONEYPOT_FIELD || key.charAt(0) === '_' || IGNORED_FIELDS.indexOf(key) !== -1 ||
+        PHOTO_FIELD.test(key)) {
       continue;
     }
     var value = String(data[key] == null ? '' : data[key]).trim().slice(0, MAX_VALUE_LENGTH);
@@ -194,6 +205,22 @@ function cleanFields_(data) {
     }
   }
   return fields;
+}
+
+/** Photos arrive as data: URLs in fields named photo_1, photo_2, ... */
+function photoAttachments_(data) {
+  var photos = [];
+  var totalBytes = 0;
+  Object.keys(data).filter(function (key) { return PHOTO_FIELD.test(key); }).sort().forEach(function (key) {
+    var match = PHOTO_DATA.exec(String(data[key]));
+    if (!match || photos.length >= MAX_PHOTOS) return;
+    var bytes = Utilities.base64Decode(match[2]);
+    if (totalBytes + bytes.length > MAX_PHOTO_BYTES) return;
+    totalBytes += bytes.length;
+    var extension = match[1] === 'jpeg' ? 'jpg' : match[1];
+    photos.push(Utilities.newBlob(bytes, 'image/' + match[1], 'photo-' + (photos.length + 1) + '.' + extension));
+  });
+  return photos;
 }
 
 function saveToSheet_(fields) {
@@ -224,7 +251,7 @@ function saveToSheet_(fields) {
   }
 }
 
-function notifyOwner_(fields, visitorEmail, visitorName) {
+function notifyOwner_(fields, visitorEmail, visitorName, photos) {
   var rows = Object.keys(fields).map(function (key) {
     return '<tr><th align="left" valign="top" style="padding:6px 12px 6px 0">' + escapeHtml_(labelFor_(key)) +
       '</th><td style="padding:6px 0;white-space:pre-wrap">' + escapeHtml_(fields[key]) + '</td></tr>';
@@ -244,6 +271,7 @@ function notifyOwner_(fields, visitorEmail, visitorName) {
     name: 'Website contact form'
   };
   if (visitorEmail) options.replyTo = visitorEmail;
+  if (photos && photos.length) options.attachments = photos;
   MailApp.sendEmail(options);
 }
 

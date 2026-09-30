@@ -217,6 +217,8 @@ still receive messages; visitors just won't get the thank-you.
   script; Google Workspace accounts can send to about **1,500**. Each message
   from your website uses two (one to you, one thank-you). That's roughly 50
   enquiries a day on a free account, far more than most small sites get.
+- If your form lets visitors add **photos**, they're attached to the email you
+  receive. They aren't saved in the spreadsheet.
 - If the limit is reached, messages are still **saved in your spreadsheet**;
   the emails resume the next day.
 - The thank-you email is only sent **once every 6 hours to the same address**,

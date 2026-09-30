@@ -42,54 +42,60 @@ The script always answers HTTP 200, so check the JSON body:
 - `{ "ok": true }`: delivered (also returned for honeypot hits, on purpose)
 - `{ "ok": false, "error": "spam-check-failed" | "empty" | "server-error" }`
 
-**nephew-site** already has the right shape in `contact.html`. Set
-`FORM_ENDPOINT` to the `/exec` URL and change the `fetch` block to:
+### What's already wired in these sites
+
+Both forms are ready; connecting them is a matter of pasting values in.
+
+**nephew-site** (`contact.html`, Google Apps Script). Near the bottom of the
+page, set:
 
 ```js
-fetch(FORM_ENDPOINT, { method:'POST', body: new URLSearchParams(new FormData(form)) })
-  .then(function(r){ return r.json(); })
-  .then(function(res){
-    if (!res.ok) throw new Error(res.error);
-    window.location.href = 'thank-you.html';
-  })
-  .catch(function(){ /* existing error handling */ });
+const FORM_ENDPOINT = "https://script.google.com/macros/s/…/exec";
+const TURNSTILE_SITE_KEY = "";   // the public site key, once Turnstile is set up
 ```
 
-**Plain HTML forms** (like SB-Site's contact page) need a small script, because
-a normal form POST would navigate the visitor to the raw JSON:
+The page posts URL-encoded and checks the `{ ok }` JSON, then goes to
+`thank-you.html`. **Photos** are shrunk in the browser to JPEGs of at most
+1600 px on the long side (max 5), sent as data URLs in `photo_1…photo_5`,
+and attached to the owner's notification email by the script (15 MB cap in
+total). They're not saved in the sheet. Files the browser can't decode (e.g.
+HEIC on desktop Chrome) are skipped, and the email says how many. It keeps
+the existing honeypot (`company`) and 3-second timing check; if
+`TURNSTILE_SITE_KEY` is set, it injects the widget and waits for a token.
+This endpoint is Apps Script-specific: if the owner picks a different
+service instead, the photo handling would need reworking (file uploads are a
+paid feature on the form services anyway).
+
+**SB-Site** (`contact-sherry-blackman/index.html`, any service). Set the
+form's `action` to the endpoint and, optionally, `data-turnstile-sitekey` to
+the site key, then delete the yellow editor note:
 
 ```html
-<form class="form" id="contactForm" method="POST" action="https://script.google.com/macros/s/…/exec">
-  …fields…
-  <p class="form-status" role="status" aria-live="polite"></p>
-</form>
-<script>
-(function () {
-  var form = document.getElementById('contactForm');
-  var status = form.querySelector('.form-status');
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var button = form.querySelector('[type=submit]');
-    button.disabled = true;
-    fetch(form.action, { method: 'POST', body: new URLSearchParams(new FormData(form)) })
-      .then(function (r) { return r.json(); })
-      .then(function (res) {
-        if (!res.ok) throw new Error(res.error);
-        form.reset();
-        status.textContent = 'Thank you, your message has been sent.';
-      })
-      .catch(function () {
-        status.textContent = 'Sorry, that didn’t send. Please try again, or email us directly.';
-      })
-      .finally(function () {
-        button.disabled = false;
-        if (window.turnstile) turnstile.reset();
-      });
-  });
-})();
-</script>
+<form class="form" id="contactForm" method="POST" action="https://…"
+      data-turnstile-sitekey="">
 ```
 
+The script picks the request format from the `action`: a
+`script.google.com` address gets a URL-encoded body and a `{ ok }` check;
+anything else (Formspree, Basin, Web3Forms) gets `FormData` with
+`Accept: application/json` and an HTTP status check. Success shows an inline
+thank-you and clears the form. For **Web3Forms**, also add
+`<input type="hidden" name="access_key" value="…">` inside the form.
+
+### Generic snippet for other plain HTML forms
+
+A plain form POST to Apps Script would navigate the visitor to the raw JSON,
+so it needs a few lines of script:
+
+```js
+fetch(form.action, { method: 'POST', body: new URLSearchParams(new FormData(form)) })
+  .then(function (r) { return r.json(); })
+  .then(function (res) { if (!res.ok) throw new Error(res.error); /* success */ })
+  .catch(function () { /* show an error; if (window.turnstile) turnstile.reset(); */ });
+```
+
+`URLSearchParams(new FormData(form))` drops file inputs (they become
+`[object File]`), so use nephew-site's approach if the form takes photos.
 Add a honeypot so the script's first spam check has something to catch:
 
 ```html
@@ -125,7 +131,8 @@ Add a honeypot so the script's first spam check has something to catch:
 - **Sheet formulas.** Values starting with `= + - @` are prefixed with `'` so
   submissions can't inject spreadsheet formulas.
 - `docs/contact-form/contact-form.gs` has no test harness in this repo. If you
-  change it, test with `sendTestEmail` in the editor and a real submission.
+  change it, test with `sendTestEmail` in the editor and a real submission
+  (with a photo).
 
 ## Formspree / Basin
 
